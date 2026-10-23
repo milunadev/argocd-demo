@@ -5,7 +5,7 @@ Laboratorio de la charla **De kubectl a GitOps**.
 - `bootstrap/argocd/`: instalación de Argo CD con Helm.
 - `apps/plain/web/`: Nginx inicial, una réplica, `superapp.test`.
 - `images/gitops-web/`: imagen del perrito, `milunadev/gitops-web:v2`.
-- `apps/helm/grafana/`: chart Grafana Community 14.0.1, Grafana 13.2.4; configuración en `values.demo.yaml`, acceso por `helm-app.test`.
+- `apps/helm/grafana/`: chart [Grafana Community](https://grafana.com/docs/grafana/latest/setup-grafana/installation/helm/) 14.0.1, Grafana 13.2.4; configuración en `values.demo.yaml`, acceso por `helm-app.test`.
 - `argocd/applications/`: Applications de referencia.
 
 ## Cambio en vivo
@@ -22,9 +22,9 @@ En Argo CD: Refresh → diff → Sync. Cambian la imagen y las réplicas; el sit
 
 ## Demo Helm
 
-Crear `grafana-demo` con el mismo repositorio, rama `main`, ruta `apps/helm/grafana`, value file `values.demo.yaml`, destino `helm-demo`. Referencia completa: `argocd/applications/grafana.yaml`. Marcar CreateNamespace y RespectIgnoreDifferences. El namespace queda sin crear antes de la demo.
+En Argo CD: NEW APP → EDIT AS YAML y pegar `argocd/applications/grafana.yaml`. Apunta a `apps/helm/grafana`, usa `values.demo.yaml` y crea el namespace `helm-demo` al sincronizar. La Application incluye las excepciones necesarias para la contraseña aleatoria del chart. El namespace queda sin crear antes de la demo.
 
-El chart despliega Grafana, un sidecar para dashboards, ConfigMaps, Secret, Service, Ingress y RBAC limitado al namespace. Incluye un dashboard de bienvenida; no instala Prometheus. Los datos son efímeros en este laboratorio. El password de admin se genera en el cluster; se preserva durante las sincronizaciones mediante ignoreDifferences.
+El chart despliega Grafana, un sidecar para dashboards, ConfigMaps, Secret, Service, Ingress y RBAC limitado al namespace. Incluye un dashboard de bienvenida; no instala Prometheus. Los datos son efímeros en este laboratorio. El chart genera un password de admin; se preserva durante las sincronizaciones mediante ignoreDifferences.
 
 ```sh
 kubectl -n helm-demo get secret grafana-demo -o jsonpath='{.data.admin-password}' | base64 --decode
