@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+      annotations:
+        demo.gitops/content-version: "v2"
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: nginx
+          image: nginx:1.30.6-alpine
+          ports:
+            - name: http
+              containerPort: 80
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NGINX_ENVSUBST_OUTPUT_DIR
+              value: /usr/share/nginx/html
+            - name: NGINX_ENTRYPOINT_WORKER_PROCESSES_AUTOTUNE
+              value: "1"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+          volumeMounts:
+            - name: content
+              mountPath: /etc/nginx/templates
+              readOnly: true
+            - name: assets
+              mountPath: /usr/share/nginx/html/assets
+              readOnly: true
+      volumes:
+        - name: content
+          configMap:
+            name: web-content
+        - name: assets
+          configMap:
+            name: web-assets

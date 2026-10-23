@@ -1,0 +1,5 @@
+replicaCount: 2
+image:
+  repository: nginx
+  tag: 1.30.6-alpine
+hostname: helm-demo.example.test
