@@ -1,0 +1,77 @@
+replicas: 1
+fullnameOverride: grafana-demo
+rbac:
+  namespaced: true
+persistence:
+  enabled: false
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+service:
+  type: ClusterIP
+  port: 80
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  hosts:
+    - helm-app.test
+sidecar:
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  dashboards:
+    enabled: true
+    resource: configmap
+    label: grafana_dashboard
+    labelValue: "1"
+testFramework:
+  enabled: false
+grafana.ini:
+  users:
+    default_theme: light
+  dashboards:
+    default_home_dashboard_path: /tmp/dashboards/gitops-demo.json
+extraObjects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: gitops-demo-dashboard
+      labels:
+        grafana_dashboard: "1"
+    data:
+      gitops-demo.json: |
+        {
+          "uid": "gitops-demo",
+          "title": "De kubectl a GitOps",
+          "schemaVersion": 39,
+          "version": 1,
+          "panels": [
+            {
+              "id": 1,
+              "type": "text",
+              "title": "Desplegado con Argo CD",
+              "gridPos": {
+                "h": 9,
+                "w": 24,
+                "x": 0,
+                "y": 0
+              },
+              "options": {
+                "mode": "markdown",
+                "content": "# Hola, KubeFest!\n\nEste dashboard llego a Kubernetes desde Git, usando el chart de Grafana.\n\n**Git → Argo CD → Kubernetes**\n\nEsta demo muestra el despliegue de Grafana; no instala Prometheus ni recopila metricas del cluster."
+              }
+            }
+          ],
+          "time": {
+            "from": "now-1h",
+            "to": "now"
+          }
+        }

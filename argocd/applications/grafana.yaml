@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana-demo
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/milunadev/argocd-demo.git
+    targetRevision: main
+    path: apps/helm/grafana
+    helm:
+      releaseName: grafana-demo
+      valueFiles:
+        - values.demo.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: helm-demo
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: grafana-demo
+      jsonPointers:
+        - /data/admin-password
+    - group: apps
+      kind: Deployment
+      name: grafana-demo
+      jsonPointers:
+        - /spec/template/metadata/annotations/checksum~1secret
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
