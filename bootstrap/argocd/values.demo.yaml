@@ -1,0 +1,29 @@
+global:
+  domain: argocd.example.test
+
+server:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hostname: argocd.example.test
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    tls: true
+  certificate:
+    enabled: true
+    issuer:
+      group: cert-manager.io
+      kind: Issuer
+      name: argocd-demo-selfsigned
+
+extraObjects:
+  - apiVersion: cert-manager.io/v1
+    kind: Issuer
+    metadata:
+      name: argocd-demo-selfsigned
+      namespace: argocd
+    spec:
+      selfSigned: {}

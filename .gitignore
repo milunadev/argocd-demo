@@ -1,0 +1,14 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+*.kubeconfig
+kubeconfig*
+*.key
+*.pem
+.cache/
+.rendered/
+
+.local/
+.local.env
+**/values.local.yaml
