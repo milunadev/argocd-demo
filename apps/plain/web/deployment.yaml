@@ -5,7 +5,7 @@ metadata:
   labels:
     app: web
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: web
@@ -17,7 +17,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: nginx
-          image: milunadev/gitops-web:v2  #milunadev/gitops-web:v2 # nginx:1.30.6-alpine 
+          image: nginx:1.30.6-alpine   #milunadev/gitops-web:v2 # nginx:1.30.6-alpine 
           ports:
             - name: http
               containerPort: 80
